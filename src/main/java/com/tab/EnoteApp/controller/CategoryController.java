@@ -1,5 +1,7 @@
 package com.tab.EnoteApp.controller;
 
+import com.tab.EnoteApp.dto.CategoryDto;
+import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
 import com.tab.EnoteApp.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +20,16 @@ public class    CategoryController {
     CategoryService categoryService;
 
     @PostMapping("/save-category")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category){
-        Boolean saveCatgory = categoryService.saveCategory(category);
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+        Boolean saveCatgory = categoryService.saveCategory(categoryDto);
         if(saveCatgory){
             return new ResponseEntity<>("saved success", HttpStatus.CREATED );
         }
         return new ResponseEntity<>("not saved",HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    @GetMapping("/categories")
+    @GetMapping("/active-categories")
     public ResponseEntity<?> getCategories(){
-        List<Category> allCatgeory= categoryService.getAllCatgeory();
+        List<CategoryResponse> allCatgeory= categoryService.getActiveCatgeory();
 
         if(CollectionUtils.isEmpty(allCatgeory)){
             return ResponseEntity.noContent().build();
