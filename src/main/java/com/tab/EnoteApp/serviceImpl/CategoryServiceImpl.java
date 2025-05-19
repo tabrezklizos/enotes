@@ -5,6 +5,7 @@ import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
 import com.tab.EnoteApp.repository.CategoryRepository;
 import com.tab.EnoteApp.service.CategoryService;
+import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -39,13 +41,52 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> getActiveCatgeory() {
+    public List<CategoryResponse> getActiveCategoryAndIsDeletedFalse() {
 
-        List<Category> categoryList = categoryRepository.findByIsActiveTrue();
+        List<Category> categoryList = categoryRepository.findByIsActiveTrueAndIsDeletedFalse();
         List<CategoryResponse> categoryResponselist
                 = categoryList.stream()
                 .map(cat -> mapper.map(cat, CategoryResponse.class)).toList();
 
         return categoryResponselist;
+    }
+
+    @Override
+    public List<CategoryResponse> getAllCategory() {
+
+        List<Category> categoryList = categoryRepository.findByIsDeletedFalse();
+        List<CategoryResponse> categoryResponselist
+                = categoryList.stream()
+                .map(cat -> mapper.map(cat, CategoryResponse.class)).toList();
+
+        return categoryResponselist;
+    }
+
+
+    @Override
+    public CategoryDto getCategoryByIdAndIsDeletedFalse(Integer id) {
+        Optional<Category> optionalCategory= categoryRepository.findByIdAndIsDeletedFalse(id);
+
+        if(optionalCategory.isPresent()){
+            Category category = optionalCategory.get();
+            return mapper.map(category,CategoryDto.class);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Boolean deleteCategoryById(Integer id) {
+
+        Optional<Category> optionalCategory= categoryRepository.findById(id);
+
+        if(optionalCategory.isPresent()){
+
+            Category category = optionalCategory.get();
+                     category.setIsDeleted(true);
+                     categoryRepository.save(category);
+            return true;
+        }
+        return false;
     }
 }
