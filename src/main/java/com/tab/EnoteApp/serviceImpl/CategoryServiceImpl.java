@@ -3,8 +3,11 @@ package com.tab.EnoteApp.serviceImpl;
 import com.tab.EnoteApp.dto.CategoryDto;
 import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
+import com.tab.EnoteApp.exception.ResourceExistsException;
+import com.tab.EnoteApp.exception.ResourceNotFoundException;
 import com.tab.EnoteApp.repository.CategoryRepository;
 import com.tab.EnoteApp.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -25,7 +29,19 @@ public class CategoryServiceImpl implements CategoryService {
     private ModelMapper mapper;
 
     @Override
-    public Boolean saveCategory(CategoryDto categoryDto) {
+    public Boolean saveCategory(CategoryDto categoryDto) throws Exception {
+
+        Optional <Category> categoryExisted= categoryRepository
+                .findByNameAndIsDeletedFalse(categoryDto.getName());
+
+
+        if(categoryExisted.isPresent()){
+
+            log.info(" existedCaregory: {}",categoryExisted.get());
+
+            throw new ResourceExistsException("resource exist exception");
+        }
+
 
         Category category = mapper.map(categoryDto, Category.class);
 
@@ -89,11 +105,17 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public CategoryDto getCategoryByIdAndIsDeletedFalse(Integer id) {
-        Optional<Category> optionalCategory= categoryRepository.findByIdAndIsDeletedFalse(id);
+    public CategoryDto getCategoryByIdAndIsDeletedFalse(Integer id) throws Exception {
+        Category category= categoryRepository
+                                    .findByIdAndIsDeletedFalse(id)
+                                    .orElseThrow(()->new ResourceNotFoundException("Category with id "+id+" is not found"));
 
-        if(optionalCategory.isPresent()){
-            Category category = optionalCategory.get();
+        if(!ObjectUtils.isEmpty(category)){
+
+            if(category.getName()==null){
+                throw new IllegalArgumentException("name is null");
+            }
+
             return mapper.map(category,CategoryDto.class);
         }
         return null;

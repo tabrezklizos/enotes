@@ -3,7 +3,9 @@ package com.tab.EnoteApp.controller;
 import com.tab.EnoteApp.dto.CategoryDto;
 import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
+import com.tab.EnoteApp.exception.ResourceExistsException;
 import com.tab.EnoteApp.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("api/v1/category")
 public class    CategoryController {
@@ -21,7 +24,7 @@ public class    CategoryController {
     CategoryService categoryService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) throws Exception {
         Boolean saveCatgory = categoryService.saveCategory(categoryDto);
         if(saveCatgory){
             return new ResponseEntity<>("saved success", HttpStatus.CREATED );
@@ -51,7 +54,8 @@ public class    CategoryController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?>getCategoryByIdAndIsDeletedFalse(@PathVariable Integer id){
+    public ResponseEntity<?>getCategoryByIdAndIsDeletedFalse(@PathVariable Integer id) throws Exception{
+
         CategoryDto categoryDto=categoryService.getCategoryByIdAndIsDeletedFalse(id);
 
         if(ObjectUtils.isEmpty(categoryDto)){
