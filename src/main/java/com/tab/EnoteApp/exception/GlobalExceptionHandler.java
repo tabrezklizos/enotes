@@ -33,6 +33,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<?> handleValidationException(ValidationException e){
+        return new ResponseEntity<>(e.getError(),HttpStatus.BAD_REQUEST);
+    }
+
 
 
 }

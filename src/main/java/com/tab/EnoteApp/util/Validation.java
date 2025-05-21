@@ -1,6 +1,7 @@
 package com.tab.EnoteApp.util;
 
 import com.tab.EnoteApp.dto.CategoryDto;
+import com.tab.EnoteApp.exception.ValidationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -23,11 +24,11 @@ public class Validation {
                 error.put("name","name is empty or null");
             }else{
 
-                if(categoryDto.getName().length()<10){
-                    error.put("name","name atleast be 10 char");
+                if(categoryDto.getName().length()<3){
+                    error.put("name","name atleast be 3 char");
                 }
-                if(categoryDto.getName().length()>100){
-                    error.put("name","name atmost be 100 char");
+                if(categoryDto.getName().length()>10){
+                    error.put("name","name atmost be 10 char");
                 }
             }
 
@@ -48,7 +49,7 @@ public class Validation {
         }
 
         if(!error.isEmpty()){
-            throw new IllegalArgumentException(error);
+            throw new ValidationException(error);
         }
 
 

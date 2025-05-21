@@ -5,6 +5,7 @@ import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
 import com.tab.EnoteApp.exception.ResourceExistsException;
 import com.tab.EnoteApp.service.CategoryService;
+import com.tab.EnoteApp.util.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,14 @@ public class    CategoryController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    Validation validation;
+
     @PostMapping("/save")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) throws Exception {
+
+        validation.categoryValidation(categoryDto);
+
         Boolean saveCatgory = categoryService.saveCategory(categoryDto);
         if(saveCatgory){
             return new ResponseEntity<>("saved success", HttpStatus.CREATED );
