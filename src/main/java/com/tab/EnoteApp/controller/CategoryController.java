@@ -4,7 +4,9 @@ import com.tab.EnoteApp.dto.CategoryDto;
 import com.tab.EnoteApp.dto.CategoryResponse;
 import com.tab.EnoteApp.entity.Category;
 import com.tab.EnoteApp.exception.ResourceExistsException;
+import com.tab.EnoteApp.handler.GenericResponse;
 import com.tab.EnoteApp.service.CategoryService;
+import com.tab.EnoteApp.util.CommonUtil;
 import com.tab.EnoteApp.util.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,31 +34,36 @@ public class    CategoryController {
 
         validation.categoryValidation(categoryDto);
 
-        Boolean saveCatgory = categoryService.saveCategory(categoryDto);
-        if(saveCatgory){
-            return new ResponseEntity<>("saved success", HttpStatus.CREATED );
+        Boolean saveCategory = categoryService.saveCategory(categoryDto);
+        if(saveCategory){
+
+            return CommonUtil.createResponseMessage("saved succes",HttpStatus.CREATED);
+            //return new ResponseEntity<>("saved success", HttpStatus.CREATED );
         }
-        return new ResponseEntity<>("not saved",HttpStatus.INTERNAL_SERVER_ERROR);
+        return CommonUtil.errorResponse(saveCategory,HttpStatus.INTERNAL_SERVER_ERROR);
+      //  return new ResponseEntity<>("not saved",HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/")
     public ResponseEntity<?> getAllCategory(){
-        List<CategoryResponse> allCatgeory= categoryService.getAllCategory();
+        List<CategoryResponse> allCategory= categoryService.getAllCategory();
 
-        if(CollectionUtils.isEmpty(allCatgeory)){
+        if(CollectionUtils.isEmpty(allCategory)){
             return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(allCatgeory,HttpStatus.OK);
+        return CommonUtil.createResponse(allCategory,HttpStatus.OK);
+        //return new ResponseEntity<>(allCatgeory,HttpStatus.OK);
     }
 
     @GetMapping("/active")
     public ResponseEntity<?> getAllActiveCategory(){
-        List<CategoryResponse> allActiveCatgeory= categoryService.getActiveCategoryAndIsDeletedFalse();
+        List<CategoryResponse> allActiveCategory= categoryService.getActiveCategoryAndIsDeletedFalse();
 
-        if(CollectionUtils.isEmpty(allActiveCatgeory)){
+        if(CollectionUtils.isEmpty(allActiveCategory)){
             return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(allActiveCatgeory,HttpStatus.OK);
+        return CommonUtil.createResponse(allActiveCategory,HttpStatus.OK);
+       // return new ResponseEntity<>(allActiveCatgeory,HttpStatus.OK);
     }
 
 
@@ -66,10 +73,11 @@ public class    CategoryController {
         CategoryDto categoryDto=categoryService.getCategoryByIdAndIsDeletedFalse(id);
 
         if(ObjectUtils.isEmpty(categoryDto)){
-            return new ResponseEntity<>("category with id "+id+" is not found",HttpStatus.NOT_FOUND);
+            return CommonUtil.errorResponseMessage("category with id "+id+" is not found",HttpStatus.NOT_FOUND);
+            //return new ResponseEntity<>("category with id "+id+" is not found",HttpStatus.NOT_FOUND);
         }
-
-        return new ResponseEntity<>(categoryDto,HttpStatus.FOUND);
+        return CommonUtil.createResponse(categoryDto,HttpStatus.FOUND);
+      //  return new ResponseEntity<>(categoryDto,HttpStatus.FOUND);
     }
 
     @DeleteMapping("/{id}")
@@ -77,9 +85,12 @@ public class    CategoryController {
         Boolean categoryDeleted=categoryService.deleteCategoryById(id);
 
         if(categoryDeleted){
-            return new ResponseEntity<>(" category with id  "+id+" is deleted",HttpStatus.OK);
+            return CommonUtil.createResponseMessage(" category with id  "+id+" is deleted",HttpStatus.OK);
+           // return new ResponseEntity<>(" category with id  "+id+" is deleted",HttpStatus.OK);
         }
-        return new ResponseEntity<>("category with this id "+id+" is not found",HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return CommonUtil.errorResponseMessage("category with this id "+id+" is not found",HttpStatus.INTERNAL_SERVER_ERROR);
+        //return new ResponseEntity<>("category with this id "+id+" is not found",HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
