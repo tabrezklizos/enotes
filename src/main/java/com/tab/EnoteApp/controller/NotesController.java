@@ -48,7 +48,7 @@ public class NotesController {
 
         List<NotesDto> allNotes = notesService.findAllNotes();
 
-        if(CollectionUtilsg.isEmpty(allNotes)){
+        if(CollectionUtils.isEmpty(allNotes)){
             return ResponseEntity.noContent().build();
         }
         return CommonUtil.createResponse(allNotes,HttpStatus.OK);
