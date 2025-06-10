@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -76,11 +78,23 @@ public class NotesServiceImpl implements NotesService {
         return false;
     }
 
+    @Override
+    public byte[] downloadFile(FileDetails fileDetails) throws Exception {
+        FileInputStream fileInputStream = new FileInputStream(fileDetails.getPath());
+        return StreamUtils.copyToByteArray(fileInputStream);
+    }
+
+    @Override
+    public FileDetails getFileDetails(Integer id)  throws Exception  {
+        FileDetails fileDetails = fileDetailsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("file not found"));
+        return fileDetails;
+    }
+
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
 
         if(!ObjectUtils.isEmpty(file) && !file.isEmpty()){
 
-            List<String>  allowedDocs = Arrays.asList("jpg", "png", "pdf");
+            List<String>  allowedDocs = Arrays.asList("jpg", "png", "pdf","txt","jpeg");
             String originalFileName = file.getOriginalFilename();
             String fileExtension = FilenameUtils.getExtension(originalFileName);
 
