@@ -1,6 +1,7 @@
 package com.tab.EnoteApp.util;
 
 import com.tab.EnoteApp.dto.CategoryDto;
+import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.exception.ValidationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -10,6 +11,46 @@ import java.util.Map;
 
 @Component
 public class Validation {
+
+    public  void notesValidation(NotesDto notesDto) {
+
+           Map<String,Object> error = new LinkedHashMap<>();
+
+           if(ObjectUtils.isEmpty(notesDto)){
+               throw  new IllegalArgumentException("notes or json data is not present");
+           }
+        else{
+               if(ObjectUtils.isEmpty(notesDto.getTitle())){
+                   error.put("title","title is empty or null");
+               }
+               else{
+                   if(notesDto.getTitle().length()<=3){
+                       error.put("title","title atleast 3");
+                   }
+                   if(notesDto.getTitle().length()>=10);{
+                       error.put("title","title atmost 10");
+                   }
+               }
+
+
+               if(ObjectUtils.isEmpty(notesDto.getDescription())){
+                   error.put("description","description is empty or null");
+               }
+               else{
+                   if(notesDto.getTitle().length()<=3){
+                       error.put("description","description atleast 3");
+                   }
+                   if(notesDto.getTitle().length()>=10){
+                       error.put("description","description atmost 10");
+                   }
+               }
+
+
+           }
+
+
+
+    }
 
     public void categoryValidation(CategoryDto categoryDto){
 
