@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +48,7 @@ public class NotesController {
 
         List<NotesDto> allNotes = notesService.findAllNotes();
 
-        if(ObjectUtils.isEmpty(allNotes)){
+        if(CollectionUtils.isEmpty(allNotes)){
             return ResponseEntity.noContent().build();
         }
         return CommonUtil.createResponse(allNotes,HttpStatus.OK);
