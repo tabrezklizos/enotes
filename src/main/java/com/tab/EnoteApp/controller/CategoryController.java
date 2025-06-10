@@ -83,15 +83,12 @@ public class    CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?>deleteCategoryById(@PathVariable Integer id){
         Boolean categoryDeleted=categoryService.deleteCategoryById(id);
-
         if(categoryDeleted){
             return CommonUtil.createResponseMessage(" category with id  "+id+" is deleted",HttpStatus.OK);
            // return new ResponseEntity<>(" category with id  "+id+" is deleted",HttpStatus.OK);
         }
-
         return CommonUtil.errorResponseMessage("category with this id "+id+" is not found",HttpStatus.INTERNAL_SERVER_ERROR);
         //return new ResponseEntity<>("category with this id "+id+" is not found",HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
 
