@@ -2,6 +2,7 @@ package com.tab.EnoteApp.serviceImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tab.EnoteApp.dto.NotesDto;
+import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
 import com.tab.EnoteApp.entity.Notes;
 import com.tab.EnoteApp.exception.ResourceExistsException;
@@ -15,13 +16,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -76,11 +81,44 @@ public class NotesServiceImpl implements NotesService {
         return false;
     }
 
+    @Override
+    public byte[] downloadFile(FileDetails fileDetails) throws Exception {
+        FileInputStream fileInputStream = new FileInputStream(fileDetails.getPath());
+        return StreamUtils.copyToByteArray(fileInputStream);
+    }
+
+    @Override
+    public FileDetails getFileDetails(Integer id)  throws Exception  {
+        FileDetails fileDetails = fileDetailsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("file not found"));
+        return fileDetails;
+    }
+
+    @Override
+    public NotesResponse findAllNotesByUserId(Integer userId,Integer pageNo,Integer pageSize) {
+
+        Pageable pageable  = PageRequest.of(pageNo, pageSize);
+        Page<Notes> pageNotes = notesRepository.findByCreatedBy(userId,pageable);
+
+        List<NotesDto>  notesDto =  pageNotes.get().map(n -> mapper.map(n, NotesDto.class)).toList();
+
+        NotesResponse notesResponse = NotesResponse.builder()
+                .notes(notesDto)
+                .pageNo(pageNotes.getNumber())
+                .pageSize(pageNotes.getSize())
+                .totalPages(pageNotes.getTotalPages())
+                .totalElements(Integer.valueOf((int)pageNotes.getTotalElements()))
+                .isFirst(pageNotes.isFirst())
+                .isLast(pageNotes.isLast())
+                .build();
+
+        return notesResponse;
+    }
+
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
 
         if(!ObjectUtils.isEmpty(file) && !file.isEmpty()){
 
-            List<String>  allowedDocs = Arrays.asList("jpg", "png", "pdf");
+            List<String>  allowedDocs = Arrays.asList("jpg", "png", "pdf","txt","jpeg");
             String originalFileName = file.getOriginalFilename();
             String fileExtension = FilenameUtils.getExtension(originalFileName);
 

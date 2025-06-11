@@ -1,7 +1,8 @@
 package com.tab.EnoteApp.service;
 
 import com.tab.EnoteApp.dto.NotesDto;
-import com.tab.EnoteApp.exception.ResourceExistsException;
+import com.tab.EnoteApp.dto.NotesResponse;
+import com.tab.EnoteApp.entity.FileDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,4 +12,10 @@ public interface NotesService {
     List<NotesDto> findAllNotes();
 
     Boolean saveNotes(String notes, MultipartFile file) throws Exception;
+
+    byte[] downloadFile(FileDetails fileDetails) throws Exception;
+
+    FileDetails getFileDetails(Integer id) throws Exception;
+
+    NotesResponse findAllNotesByUserId(Integer userId,Integer pageNo,Integer pageSize);
 }
