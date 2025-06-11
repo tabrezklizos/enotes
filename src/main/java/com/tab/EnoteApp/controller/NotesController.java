@@ -1,6 +1,7 @@
 package com.tab.EnoteApp.controller;
 
 import com.tab.EnoteApp.dto.NotesDto;
+import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
 import com.tab.EnoteApp.exception.ResourceExistsException;
 import com.tab.EnoteApp.repository.CategoryRepository;
@@ -45,14 +46,28 @@ public class NotesController {
 
     @GetMapping("/")
     public ResponseEntity<?> getAllNotes(){
-
         List<NotesDto> allNotes = notesService.findAllNotes();
-
         if(CollectionUtils.isEmpty(allNotes)){
             return ResponseEntity.noContent().build();
         }
         return CommonUtil.createResponse(allNotes,HttpStatus.OK);
     }
+
+        @GetMapping("/user-notes")
+    public ResponseEntity<?> getAllNotesByUserId(
+            @RequestParam(name="pageNo",defaultValue ="0") Integer pageNo,
+            @RequestParam(name="pageSize",defaultValue = "10") Integer pageSize
+        ){
+
+        Integer userId=1;
+
+        NotesResponse allNotes = notesService.findAllNotesByUserId(userId,pageNo,pageSize);
+        if(ObjectUtils.isEmpty(allNotes)){
+            return ResponseEntity.noContent().build();
+        }
+        return CommonUtil.createResponse(allNotes,HttpStatus.OK);
+    }
+
 
             @GetMapping("downloadFile/{id}")
     public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {

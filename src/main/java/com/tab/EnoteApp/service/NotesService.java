@@ -1,6 +1,7 @@
 package com.tab.EnoteApp.service;
 
 import com.tab.EnoteApp.dto.NotesDto;
+import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,4 +16,6 @@ public interface NotesService {
     byte[] downloadFile(FileDetails fileDetails) throws Exception;
 
     FileDetails getFileDetails(Integer id) throws Exception;
+
+    NotesResponse findAllNotesByUserId(Integer userId,Integer pageNo,Integer pageSize);
 }
