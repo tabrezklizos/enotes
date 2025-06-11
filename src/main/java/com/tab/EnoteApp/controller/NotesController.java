@@ -33,14 +33,14 @@ public class NotesController {
     @PostMapping("/save")
     public ResponseEntity<?> saveNotes(@RequestParam String notes,
                                        @RequestParam(required = false) MultipartFile file) throws Exception {
-
        // Boolean saveNotes=notesService.saveNotes(notesDto);
-        Boolean saveNotes=notesService.saveNotes(notes,file);
 
+
+
+        Boolean saveNotes=notesService.saveNotes(notes,file);
         if(saveNotes){
             return CommonUtil.createResponseMessage("saved success", HttpStatus.CREATED);
         }
-
         return CommonUtil.errorResponse(saveNotes,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

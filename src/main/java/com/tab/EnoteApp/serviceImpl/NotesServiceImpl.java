@@ -57,6 +57,12 @@ public class NotesServiceImpl implements NotesService {
         ObjectMapper ob = new ObjectMapper();
         NotesDto notesDto = ob.readValue(notes, NotesDto.class);
 
+        if(!ObjectUtils.isEmpty(notesDto.getId())){
+
+            updateNotes(notesDto,file);
+
+        }
+
          validation.notesValidation(notesDto);
         Optional<Notes> NotesExist=notesRepository.findByTitle(notesDto.getTitle());
         if(NotesExist.isPresent()){
@@ -70,7 +76,9 @@ public class NotesServiceImpl implements NotesService {
             notesMap.setFileDetails(fileDlts);
         }
         else{
-            notesMap.setFileDetails(null);
+            if(ObjectUtils.isEmpty(notesDto.getId())){
+                notesMap.setFileDetails(null);
+            }
         }
 
         Notes notesSaved = notesRepository.save(notesMap);
@@ -79,6 +87,17 @@ public class NotesServiceImpl implements NotesService {
         }
 
         return false;
+    }
+
+    private void updateNotes(NotesDto notesDto, MultipartFile file) throws ResourceNotFoundException {
+
+        Notes existNote = notesRepository.findById(notesDto.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("invalid notes Id"));
+        if(ObjectUtils.isEmpty(file)){
+            notesDto.setFileDetails(mapper.map(existNote.getFileDetails(), NotesDto.FilesDto.class));
+        }
+
+
     }
 
     @Override
@@ -147,8 +166,8 @@ public class NotesServiceImpl implements NotesService {
             fileDetails.setPath(storePath);
 
             //upload file
-            long copy = Files.copy(file.getInputStream(), Paths.get(storePath));
-            if(copy!=0){
+           long copy = Files.copy(file.getInputStream(), Paths.get(storePath));
+           if(copy!=0){
                 FileDetails saveFileDetails = fileDetailsRepository.save(fileDetails);
                 return saveFileDetails;
             }

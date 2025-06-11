@@ -1,5 +1,4 @@
 package com.tab.EnoteApp.dto;
-import com.tab.EnoteApp.entity.FileDetails;
 import lombok.Data;
 import java.util.Date;
 
@@ -11,7 +10,7 @@ public class NotesDto {
     private String title;
     private String description;
     private CategoryDto category;
-    private FileDetails fileDetails;
+    private FilesDto fileDetails;
 
     private Integer createdBy;
     private Date createdOn;
@@ -19,7 +18,7 @@ public class NotesDto {
     private Date updatedOn;
 
     @Data
-    public static class FileDetails {
+    public static class FilesDto {
         private Integer id;
         private String originalFileName;
         private String displayFileName;
