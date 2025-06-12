@@ -3,6 +3,7 @@ package com.tab.EnoteApp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -23,6 +24,6 @@ public class Notes  extends BaseModel{
     private FileDetails fileDetails;
 
     private Boolean isDeleted;
-    private Date deletedOn;
+    private LocalDateTime deletedOn;
 
 }

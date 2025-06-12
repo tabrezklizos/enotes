@@ -107,16 +107,27 @@ public class NotesController {
 
     @GetMapping("/recycle-bin")
     public ResponseEntity<?> recycleBinNotes() throws Exception {
-
         Integer userId=1;
-
         List<NotesDto> recycleNotes = notesService.findByCreatedByAndIsDeletedTrue(userId);
-
         if(CollectionUtils.isEmpty(recycleNotes)){
             return ResponseEntity.noContent().build();
         }
         return CommonUtil.createResponse(recycleNotes,HttpStatus.OK);
     }
+    @DeleteMapping("/empty-recycle-bin")
+    public ResponseEntity<?> emptyRecycleBin( ) throws Exception {
+            Integer userId=1;
+            notesService.emptyRecycleBin(userId);
+            return CommonUtil.createResponse("recycle bin emptied",HttpStatus.OK);
+    }
+    @DeleteMapping("/hard-delete-note/{id}")
+    public ResponseEntity<?> hardDeleteNote(@PathVariable Integer id) throws Exception {
+        Integer userId = 1;
+        notesService.hardDeleteNote(id);
+        return CommonUtil.createResponse("delete success",HttpStatus.OK);
+    }
+
+
 
 
 
