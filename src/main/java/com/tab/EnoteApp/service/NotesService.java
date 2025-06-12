@@ -24,4 +24,8 @@ public interface NotesService {
     Boolean restoreNote(Integer userId, Integer id) throws Exception;
 
     List<NotesDto> findByCreatedByAndIsDeletedTrue(Integer userId) throws Exception;
+
+    void emptyRecycleBin(Integer userId) throws Exception;
+
+    void hardDeleteNote(Integer id) throws Exception;
 }

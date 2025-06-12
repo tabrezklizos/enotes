@@ -1,5 +1,7 @@
 package com.tab.EnoteApp.dto;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -17,7 +19,7 @@ public class NotesDto {
     private Integer updatedBy;
     private Date updatedOn;
     private Boolean isDeleted;
-    private Date deletedOn;
+    private LocalDateTime deletedOn;
 
     @Data
     public static class FilesDto {

@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -143,7 +144,7 @@ public class NotesServiceImpl implements NotesService {
                }
 
                existNote.setIsDeleted(true);
-               existNote.setDeletedOn(new Date());
+               existNote.setDeletedOn(LocalDateTime.now());
 
                notesRepository.save(existNote);
 
@@ -178,6 +179,27 @@ public class NotesServiceImpl implements NotesService {
         return notes;
 
 
+    }
+
+    @Override
+    public void emptyRecycleBin(Integer userId) throws Exception {
+        List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
+        if (CollectionUtils.isEmpty(recycleNotes)){
+            throw new ResourceNotFoundException("recycle bin is empty");
+        }
+        notesRepository.deleteAll(recycleNotes);
+
+    }
+
+    @Override
+    public void hardDeleteNote(Integer id) throws Exception {
+      Notes recycleNote = notesRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("note does not exist"));
+        if(recycleNote.getIsDeleted()){
+            notesRepository.delete(recycleNote);
+        }
+        else{
+            throw new IllegalArgumentException("sorry you cant delete directly");
+        }
     }
 
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
