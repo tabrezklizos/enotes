@@ -18,4 +18,10 @@ public interface NotesService {
     FileDetails getFileDetails(Integer id) throws Exception;
 
     NotesResponse findAllNotesByUserId(Integer userId,Integer pageNo,Integer pageSize);
+
+    Boolean softDeleteNote(Integer userId, Integer id) throws Exception;
+
+    Boolean restoreNote(Integer userId, Integer id) throws Exception;
+
+    List<NotesDto> findByCreatedByAndIsDeletedTrue(Integer userId) throws Exception;
 }

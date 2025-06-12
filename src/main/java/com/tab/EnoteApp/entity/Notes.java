@@ -3,6 +3,8 @@ package com.tab.EnoteApp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity
 public class Notes  extends BaseModel{
@@ -19,5 +21,8 @@ public class Notes  extends BaseModel{
 
     @ManyToOne
     private FileDetails fileDetails;
+
+    private Boolean isDeleted;
+    private Date deletedOn;
 
 }
