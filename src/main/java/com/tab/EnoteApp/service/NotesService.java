@@ -1,5 +1,6 @@
 package com.tab.EnoteApp.service;
 
+import com.tab.EnoteApp.dto.FavNoteDto;
 import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
@@ -28,4 +29,10 @@ public interface NotesService {
     void emptyRecycleBin(Integer userId) throws Exception;
 
     void hardDeleteNote(Integer id) throws Exception;
+
+
+    void saveFavNote(Integer noteId) throws Exception;
+    void unFavNote(Integer favNoteId) throws Exception;
+    List<FavNoteDto> getFavNotes() throws Exception;
+
 }

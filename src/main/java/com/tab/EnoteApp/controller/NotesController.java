@@ -1,5 +1,6 @@
 package com.tab.EnoteApp.controller;
 
+import com.tab.EnoteApp.dto.FavNoteDto;
 import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
@@ -126,6 +127,24 @@ public class NotesController {
         notesService.hardDeleteNote(id);
         return CommonUtil.createResponse("delete success",HttpStatus.OK);
     }
+
+    @PostMapping("/fav-note/{noteId}")
+    public ResponseEntity<?> saveFavNote(@PathVariable Integer noteId) throws Exception {
+        notesService.saveFavNote(noteId);
+        return CommonUtil.createResponse("favourite note added",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/unFav-note/{favNoteId}")
+    public ResponseEntity<?> unFavNote(@PathVariable Integer favNoteId) throws Exception {
+        notesService.unFavNote(favNoteId);
+        return CommonUtil.createResponse("note un favourited",HttpStatus.OK);
+    }
+    @GetMapping("/fav-notes")
+    public ResponseEntity<?> getFavNotes() throws Exception {
+        List<FavNoteDto> favNotes = notesService.getFavNotes();
+        return CommonUtil.createResponse(favNotes,HttpStatus.FOUND);
+    }
+
 
 
 

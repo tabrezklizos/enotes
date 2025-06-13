@@ -1,13 +1,16 @@
 package com.tab.EnoteApp.serviceImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tab.EnoteApp.dto.FavNoteDto;
 import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.dto.NotesResponse;
+import com.tab.EnoteApp.entity.FavNote;
 import com.tab.EnoteApp.entity.FileDetails;
 import com.tab.EnoteApp.entity.Notes;
 import com.tab.EnoteApp.exception.ResourceExistsException;
 import com.tab.EnoteApp.exception.ResourceNotFoundException;
 import com.tab.EnoteApp.repository.CategoryRepository;
+import com.tab.EnoteApp.repository.FavNoteRepository;
 import com.tab.EnoteApp.repository.FileDetailsRepository;
 import com.tab.EnoteApp.repository.NotesRepository;
 import com.tab.EnoteApp.service.NotesService;
@@ -46,6 +49,8 @@ public class NotesServiceImpl implements NotesService {
     Validation validation;
     @Autowired
     FileDetailsRepository fileDetailsRepository;
+    @Autowired
+    FavNoteRepository favNoteRepository;
 
     @Value("${file.upload.path}")
     private String uploadpath;
@@ -200,6 +205,35 @@ public class NotesServiceImpl implements NotesService {
         else{
             throw new IllegalArgumentException("sorry you cant delete directly");
         }
+    }
+
+    @Override
+    public void saveFavNote(Integer noteId) throws Exception {
+        Integer userId=1;
+        Notes note = notesRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("Invalid Note id"));
+        FavNote favNote = FavNote.builder()
+                .note(note)
+                .userId(userId)
+                .build();
+        favNoteRepository.save(favNote);
+    }
+
+    @Override
+    public void unFavNote(Integer favNoteId) throws Exception {
+        FavNote favNoteExist = favNoteRepository.findById(favNoteId).orElseThrow(() -> new ResourceNotFoundException("favourite note does not exist"));
+        favNoteRepository.delete(favNoteExist);
+    }
+
+    @Override
+    public List<FavNoteDto> getFavNotes() throws Exception {
+        Integer userId=1;
+        List<FavNote> allFavNoteByUserId = favNoteRepository.findAllFavNoteByUserId(userId);
+        if(CollectionUtils.isEmpty(allFavNoteByUserId)){
+            throw new ResourceNotFoundException("favourite notes are empty");
+        }
+        List<FavNoteDto> list = allFavNoteByUserId.stream().map(n -> mapper.map(n, FavNoteDto.class)).toList();
+
+        return list;
     }
 
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
