@@ -236,6 +236,26 @@ public class NotesServiceImpl implements NotesService {
         return list;
     }
 
+    @Override
+    public Boolean copyNote(Integer noteId) throws Exception {
+        Notes note = notesRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("note does not exist"));
+
+         Notes copyNote = Notes.builder()
+                                 .title(note.getTitle())
+                                 .isDeleted(false)
+                                 .category(note.getCategory())
+                                 .description(note.getDescription())
+                                 .fileDetails(null)
+                                .build();
+
+         notesRepository.save(copyNote);
+
+         if(!ObjectUtils.isEmpty(copyNote)){
+             return true;
+         }
+         return false;
+    }
+
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
 
         if(!ObjectUtils.isEmpty(file) && !file.isEmpty()){

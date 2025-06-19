@@ -4,6 +4,7 @@ import com.tab.EnoteApp.dto.FavNoteDto;
 import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.dto.NotesResponse;
 import com.tab.EnoteApp.entity.FileDetails;
+import com.tab.EnoteApp.entity.Notes;
 import com.tab.EnoteApp.service.NotesService;
 import com.tab.EnoteApp.util.CommonUtil;
 import com.tab.EnoteApp.util.Validation;
@@ -143,6 +144,17 @@ public class NotesController {
     public ResponseEntity<?> getFavNotes() throws Exception {
         List<FavNoteDto> favNotes = notesService.getFavNotes();
         return CommonUtil.createResponse(favNotes,HttpStatus.FOUND);
+    }
+
+    @GetMapping("/copy-notes/{noteId}")
+    public ResponseEntity<?> copyNotes(@PathVariable Integer noteId) throws Exception {
+       Boolean copyNote= notesService.copyNote(noteId);
+
+       if(copyNote){
+           return CommonUtil.createResponse(" copied",HttpStatus.OK);
+
+       }
+        return CommonUtil.createResponse("not copied",HttpStatus.OK);
     }
 
 

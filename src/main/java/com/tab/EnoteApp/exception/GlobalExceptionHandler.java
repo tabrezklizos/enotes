@@ -27,6 +27,13 @@ public class GlobalExceptionHandler {
         //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(SuccessException.class)
+    public ResponseEntity<?> handleSuccessException(SuccessException e){
+        return CommonUtil.createResponseMessage(e.getMessage(),HttpStatus.OK    );
+        //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(Exception e){
         log.error("GlobalExceptionhandler :: ResourceNotFoundException :: ",e.getMessage());

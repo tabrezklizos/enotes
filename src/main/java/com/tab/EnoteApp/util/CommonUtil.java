@@ -1,6 +1,7 @@
 package com.tab.EnoteApp.util;
 
 import com.tab.EnoteApp.handler.GenericResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +79,12 @@ public class CommonUtil {
                 return "application/octet-stream";
 
         }
+    }
+
+    public static String getUrl(HttpServletRequest request) {
+        String apiUrl = request.getRequestURL().toString();
+        String url=apiUrl.replace(request.getServletPath(),"");
+        return url;
+
     }
 }
