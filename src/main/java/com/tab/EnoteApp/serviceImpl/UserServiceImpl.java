@@ -10,6 +10,7 @@ import com.tab.EnoteApp.entity.Role;
 import com.tab.EnoteApp.entity.User;
 import com.tab.EnoteApp.repository.RoleRepository;
 import com.tab.EnoteApp.repository.UserRepository;
+import com.tab.EnoteApp.service.JwtService;
 import com.tab.EnoteApp.service.UserService;
 import com.tab.EnoteApp.util.EmailService;
 import com.tab.EnoteApp.util.Validation;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private EmailService emailService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtService jwtService;
 
     @Override
     public Boolean register(UserDto userDto, String url) throws Exception {
@@ -103,12 +106,12 @@ public class UserServiceImpl implements UserService {
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
             if(authenticate.isAuthenticated()){
-
                 CustomUserDetails customUserDetails = (CustomUserDetails)authenticate.getPrincipal();
+                String token = jwtService.generateToken(customUserDetails.getUser());
 
                 LoginResponse response = LoginResponse.builder()
-                        .user(customUserDetails.getUser())
-                        .token("uydgfhgashfdughgjgjjkjf")
+                        .user(mapper.map(customUserDetails.getUser(), UserDto.class))
+                        .token(token)
                         .build();
                 return response;
             }
