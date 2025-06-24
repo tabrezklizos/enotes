@@ -1,8 +1,12 @@
 package com.tab.EnoteApp.serviceImpl;
 
 import com.tab.EnoteApp.entity.User;
+import com.tab.EnoteApp.exception.JwtAuthException;
+import com.tab.EnoteApp.exception.JwtExpireException;
 import com.tab.EnoteApp.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -48,15 +52,13 @@ public class JwtServiceImpl implements JwtService {
                 .claims().add(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 10))
+                .expiration(new Date(System.currentTimeMillis() + 60*60*10))
                 .and()
                 .signWith(getKey())
                 .compact();
 
         return token;
-
     }
-
     @Override
     public String extractUsername(String token) {
         Claims claims = extractAllClaims(token);
@@ -69,12 +71,21 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token){
-        Claims claims = Jwts.parser()
-                            .verifyWith(decrypt(secretKey))
-                            .build()
-                            .parseSignedClaims(token)
-                            .getPayload();
-        return claims;
+        try {
+            return  Jwts.parser()
+                        .verifyWith(decrypt(secretKey))
+                        .build()
+                        .parseSignedClaims(token)
+                        .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new JwtExpireException("Token Expired");
+        } catch (JwtException e) {
+            throw new JwtAuthException("Invalid Token");
+        }
+        catch (Exception e) {
+            throw e;
+        }
+
     }
 
     private SecretKey decrypt(String secretKey){

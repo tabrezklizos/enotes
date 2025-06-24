@@ -49,7 +49,7 @@ public class CommonUtil {
     public static ResponseEntity<?> errorResponseMessage(String message, HttpStatus responseStatus){
 
         GenericResponse response = GenericResponse.builder()
-                .status("succes")
+                .status("failed")
                 .message(message)
                 .responseStatus(responseStatus)
                 .build();

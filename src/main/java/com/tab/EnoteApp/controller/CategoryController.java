@@ -2,16 +2,13 @@ package com.tab.EnoteApp.controller;
 
 import com.tab.EnoteApp.dto.CategoryDto;
 import com.tab.EnoteApp.dto.CategoryResponse;
-import com.tab.EnoteApp.entity.Category;
-import com.tab.EnoteApp.exception.ResourceExistsException;
-import com.tab.EnoteApp.handler.GenericResponse;
 import com.tab.EnoteApp.service.CategoryService;
 import com.tab.EnoteApp.util.CommonUtil;
 import com.tab.EnoteApp.util.Validation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +27,7 @@ public class    CategoryController {
     Validation validation;
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) throws Exception {
 
         validation.categoryValidation(categoryDto);
@@ -45,6 +43,7 @@ public class    CategoryController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllCategory(){
         List<CategoryResponse> allCategory= categoryService.getAllCategory();
 
@@ -56,6 +55,7 @@ public class    CategoryController {
     }
 
     @GetMapping("/active")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> getAllActiveCategory(){
         List<CategoryResponse> allActiveCategory= categoryService.getActiveCategoryAndIsDeletedFalse();
 
@@ -68,6 +68,7 @@ public class    CategoryController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?>getCategoryByIdAndIsDeletedFalse(@PathVariable Integer id) throws Exception{
 
         CategoryDto categoryDto=categoryService.getCategoryByIdAndIsDeletedFalse(id);
@@ -81,6 +82,7 @@ public class    CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?>deleteCategoryById(@PathVariable Integer id){
         Boolean categoryDeleted=categoryService.deleteCategoryById(id);
         if(categoryDeleted){

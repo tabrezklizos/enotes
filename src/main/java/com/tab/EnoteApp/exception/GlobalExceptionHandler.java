@@ -4,10 +4,12 @@ import com.tab.EnoteApp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.FileNotFoundException;
+
 
 @Slf4j
 @ControllerAdvice
@@ -19,6 +21,10 @@ public class GlobalExceptionHandler {
         return CommonUtil.errorResponseMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e){
+        return CommonUtil.errorResponseMessage(e.getMessage(),HttpStatus.FORBIDDEN);
+    }
 
 
     @ExceptionHandler(NullPointerException.class)
@@ -29,7 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SuccessException.class)
     public ResponseEntity<?> handleSuccessException(SuccessException e){
-        return CommonUtil.createResponseMessage(e.getMessage(),HttpStatus.OK    );
+        return CommonUtil.createResponseMessage(e.getMessage(),HttpStatus.OK);
         //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -43,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceExistsException.class)
     public ResponseEntity<?> handleResourceExistsException(Exception e){
         log.error("GlobalExceptionhandler :: ResourceExistsException :: ",e.getMessage());
-        return CommonUtil.errorResponseMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return CommonUtil.errorResponseMessage(e.getMessage(),HttpStatus.CONFLICT);
       //  return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

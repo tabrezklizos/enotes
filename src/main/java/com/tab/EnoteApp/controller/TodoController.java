@@ -6,6 +6,7 @@ import com.tab.EnoteApp.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class TodoController {
     private TodoService todoService;
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> saveTodo(@RequestBody TodoDto todoDto) throws Exception {
         Boolean todoSaved = todoService.saveTodo(todoDto);
         if(todoSaved){
@@ -29,12 +31,14 @@ public class TodoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getTodoById(@PathVariable Integer id) throws Exception {
         TodoDto todoDto = todoService.findById(id);
         return CommonUtil.createResponse(todoDto, HttpStatus.FOUND);
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getTodoByUserId() throws Exception {
         List<TodoDto> toDoDtoList = todoService.findByUserId();
 

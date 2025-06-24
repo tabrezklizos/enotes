@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -42,6 +43,8 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Boolean register(UserDto userDto, String url) throws Exception {
@@ -56,6 +59,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
           user.setStatus(status);
+          user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
 
