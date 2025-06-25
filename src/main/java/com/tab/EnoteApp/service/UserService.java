@@ -1,10 +1,12 @@
 package com.tab.EnoteApp.service;
 
-import com.tab.EnoteApp.dto.LoginRequest;
-import com.tab.EnoteApp.dto.LoginResponse;
-import com.tab.EnoteApp.dto.UserDto;
+import com.tab.EnoteApp.dto.PasswordChange;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
-    public Boolean register(UserDto userDto, String url) throws Exception;
-    LoginResponse login(LoginRequest request);
+    public void changePassword(PasswordChange passwordChange);
+
+    public void sendEmailForPasswordReset(String email, HttpServletRequest request) throws Exception;
+
+    void verifyPswdResetLink(Integer uid, String code) throws Exception;
 }

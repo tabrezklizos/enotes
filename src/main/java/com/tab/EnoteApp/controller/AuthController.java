@@ -2,8 +2,8 @@ package com.tab.EnoteApp.controller;
 
 import com.tab.EnoteApp.dto.LoginRequest;
 import com.tab.EnoteApp.dto.LoginResponse;
-import com.tab.EnoteApp.dto.UserDto;
-import com.tab.EnoteApp.service.UserService;
+import com.tab.EnoteApp.dto.UserRequest;
+import com.tab.EnoteApp.service.AuthService;
 import com.tab.EnoteApp.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     @Autowired
-    UserService userService;
+    AuthService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto, HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception {
 
         String url=CommonUtil.getUrl(request);
 
-        Boolean register = userService.register(userDto,url);
+        Boolean register = userService.register(userRequest,url);
         if(register){
             return CommonUtil.errorResponseMessage("saved user", HttpStatus.CREATED);
         }

@@ -58,9 +58,7 @@ public class NotesController {
             @RequestParam(name="pageSize",defaultValue = "10") Integer pageSize
         ){
 
-        Integer userId=1;
-
-        NotesResponse allNotes = notesService.findAllNotesByUserId(userId,pageNo,pageSize);
+        NotesResponse allNotes = notesService.findAllNotesByUserId(pageNo,pageSize);
         if(ObjectUtils.isEmpty(allNotes)){
             return ResponseEntity.noContent().build();
         }
@@ -68,8 +66,8 @@ public class NotesController {
     }
 
 
-            @GetMapping("/downloadFile/{id}")
-            @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping("/downloadFile/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {
 
         FileDetails fileDetails =notesService.getFileDetails(id);
@@ -82,28 +80,20 @@ public class NotesController {
         return ResponseEntity.ok().headers(httpHeaders).body(data);
     }
 
-
     @GetMapping("/delete-note/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> deleteNote(@PathVariable Integer id) throws Exception {
-
-       Integer userId=1;
-
-        Boolean softDeleted = notesService.softDeleteNote(userId, id);
-
+    public ResponseEntity<?> deleteNoteByUser(@PathVariable Integer id) throws Exception {
+        Boolean softDeleted = notesService.softDeleteNote(id);
         if(softDeleted){
             return CommonUtil.createResponseMessage("delete success", HttpStatus.OK);
         }
         return CommonUtil.errorResponse("internal server error  ",HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @GetMapping("/restore-note/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> restoreNote(@PathVariable Integer id) throws Exception {
-        Integer userId=1;
-        Boolean restored = notesService.restoreNote(userId, id);
-
+    public ResponseEntity<?> restoreNoteByUser(@PathVariable Integer id) throws Exception {
+        Boolean restored = notesService.restoreNote(id);
         if(restored){
             return CommonUtil.createResponseMessage("restore success", HttpStatus.OK);
         }
@@ -112,9 +102,8 @@ public class NotesController {
 
     @GetMapping("/recycle-bin")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> recycleBinNotes() throws Exception {
-        Integer userId=1;
-        List<NotesDto> recycleNotes = notesService.findByCreatedByAndIsDeletedTrue(userId);
+    public ResponseEntity<?> recycleBinNotesByUser() throws Exception {
+        List<NotesDto> recycleNotes = notesService.findByCreatedByAndIsDeletedTrue();
         if(CollectionUtils.isEmpty(recycleNotes)){
             return ResponseEntity.noContent().build();
         }
@@ -123,14 +112,12 @@ public class NotesController {
     @DeleteMapping("/empty-recycle-bin")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> emptyRecycleBin( ) throws Exception {
-            Integer userId=1;
-            notesService.emptyRecycleBin(userId);
+            notesService.emptyRecycleBin();
             return CommonUtil.createResponse("recycle bin emptied",HttpStatus.OK);
     }
     @DeleteMapping("/hard-delete-note/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> hardDeleteNote(@PathVariable Integer id) throws Exception {
-        Integer userId = 1;
         notesService.hardDeleteNote(id);
         return CommonUtil.createResponse("delete success",HttpStatus.OK);
     }
@@ -159,19 +146,11 @@ public class NotesController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> copyNotes(@PathVariable Integer noteId) throws Exception {
        Boolean copyNote= notesService.copyNote(noteId);
-
        if(copyNote){
            return CommonUtil.createResponse(" copied",HttpStatus.OK);
-
        }
         return CommonUtil.createResponse("not copied",HttpStatus.OK);
     }
-
-
-
-
-
-
 }
 
 

@@ -3,7 +3,7 @@ package com.tab.EnoteApp.util;
 import com.tab.EnoteApp.dto.CategoryDto;
 import com.tab.EnoteApp.dto.NotesDto;
 import com.tab.EnoteApp.dto.TodoDto;
-import com.tab.EnoteApp.dto.UserDto;
+import com.tab.EnoteApp.dto.UserRequest;
 import com.tab.EnoteApp.enums.TodoStatus;
 import com.tab.EnoteApp.exception.ResourceExistsException;
 import com.tab.EnoteApp.exception.ResourceNotFoundException;
@@ -126,43 +126,43 @@ public class Validation {
 
     }
 
-    public  void userValidation(UserDto userDto) throws Exception {
+    public  void userValidation(UserRequest userRequest) throws Exception {
 
-        if(!StringUtils.hasText(userDto.getFirstName())){
+        if(!StringUtils.hasText(userRequest.getFirstName())){
             throw new IllegalArgumentException("first name is invalid");
         }
 
-        if(!StringUtils.hasText(userDto.getLastName())){
+        if(!StringUtils.hasText(userRequest.getLastName())){
             throw new IllegalArgumentException("last name is invalid");
         }
 
-        if(!StringUtils.hasText(userDto.getEmail())
-                || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
+        if(!StringUtils.hasText(userRequest.getEmail())
+                || !userRequest.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("email is invalid");
         }
         else{
-            boolean emailExist = userRepository.existsByEmail(userDto.getEmail());
+            boolean emailExist = userRepository.existsByEmail(userRequest.getEmail());
             if(emailExist){
                 throw new ResourceExistsException("email already exists");
             }
         }
 
-        if(!StringUtils.hasText(userDto.getMobNo())
-                || !userDto.getMobNo().matches(Constants.MOB_REGEX)){
+        if(!StringUtils.hasText(userRequest.getMobNo())
+                || !userRequest.getMobNo().matches(Constants.MOB_REGEX)){
             throw new IllegalArgumentException("mobno is invalid");
         }
-        if(!StringUtils.hasText(userDto.getPassword())
-                || !userDto.getPassword().matches(Constants.PAS_REGEX)){
+        if(!StringUtils.hasText(userRequest.getPassword())
+                || !userRequest.getPassword().matches(Constants.PAS_REGEX)){
             throw new IllegalArgumentException("password is invalid");
         }
 
-        if(CollectionUtils.isEmpty(userDto.getRoles())){
+        if(CollectionUtils.isEmpty(userRequest.getRoles())){
             throw new IllegalArgumentException("role is invalid");
         }
         else{
             List<Integer>  roleIds = roleRepository.findAll().stream().map(r -> r.getId()).toList();
 
-            List<Integer>invalidRoleIds=userDto.getRoles().stream()
+            List<Integer>invalidRoleIds= userRequest.getRoles().stream()
                     .map(r->r.getId())
                     .filter(roleId->!roleIds.contains(roleId)).toList();
 

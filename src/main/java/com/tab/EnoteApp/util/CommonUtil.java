@@ -1,10 +1,13 @@
 package com.tab.EnoteApp.util;
 
+import com.tab.EnoteApp.config.security.CustomUserDetails;
+import com.tab.EnoteApp.entity.User;
 import com.tab.EnoteApp.handler.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class CommonUtil {
 
@@ -85,6 +88,17 @@ public class CommonUtil {
         String apiUrl = request.getRequestURL().toString();
         String url=apiUrl.replace(request.getServletPath(),"");
         return url;
+
+    }
+
+    public static User getLogUser(){
+        try {
+            CustomUserDetails logUser = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
+            return logUser.getUser();
+        } catch (Exception e) {
+            throw e;
+        }
 
     }
 }

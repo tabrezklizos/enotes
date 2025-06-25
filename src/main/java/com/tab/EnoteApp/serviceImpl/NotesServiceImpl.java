@@ -14,6 +14,7 @@ import com.tab.EnoteApp.repository.FavNoteRepository;
 import com.tab.EnoteApp.repository.FileDetailsRepository;
 import com.tab.EnoteApp.repository.NotesRepository;
 import com.tab.EnoteApp.service.NotesService;
+import com.tab.EnoteApp.util.CommonUtil;
 import com.tab.EnoteApp.util.Validation;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -64,11 +65,8 @@ public class NotesServiceImpl implements NotesService {
         notesDto.setIsDeleted(false);
         notesDto.setDeletedOn(null);
 
-
         if(!ObjectUtils.isEmpty(notesDto.getId())){
-
             updateNotes(notesDto,file);
-
         }
 
          validation.notesValidation(notesDto);
@@ -121,8 +119,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public NotesResponse findAllNotesByUserId(Integer userId,Integer pageNo,Integer pageSize) {
-
+    public NotesResponse findAllNotesByUserId(Integer pageNo,Integer pageSize) {
+        Integer userId=CommonUtil.getLogUser().getId();
         Pageable pageable  = PageRequest.of(pageNo, pageSize);
         Page<Notes> pageNotes = notesRepository.findByCreatedByAndIsDeletedFalse(userId,pageable);
 
@@ -142,7 +140,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Boolean softDeleteNote(Integer userId, Integer id) throws Exception {
+    public Boolean softDeleteNote(Integer id) throws Exception {
+        Integer userId=CommonUtil.getLogUser().getId();
        Notes existNote = notesRepository.findByIdAndCreatedBy(id,userId);
                if(ObjectUtils.isEmpty(existNote)){
                    throw new ResourceNotFoundException("Notes not found");
@@ -157,8 +156,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Boolean restoreNote(Integer userId, Integer id) throws Exception {
-
+    public Boolean restoreNote(Integer id) throws Exception {
+        Integer userId=CommonUtil.getLogUser().getId();
         Notes existNote = notesRepository.findByIdAndCreatedBy(id,userId);
         if(ObjectUtils.isEmpty(existNote)){
             throw new ResourceNotFoundException("Notes not found");
@@ -174,7 +173,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public List<NotesDto> findByCreatedByAndIsDeletedTrue(Integer userId) throws Exception {
+    public List<NotesDto> findByCreatedByAndIsDeletedTrue() throws Exception {
+        Integer userId=CommonUtil.getLogUser().getId();
         List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
         if (CollectionUtils.isEmpty(recycleNotes)){
             throw new ResourceNotFoundException("recycle bin is empty");
@@ -187,7 +187,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public void emptyRecycleBin(Integer userId) throws Exception {
+    public void emptyRecycleBin() throws Exception {
+        Integer userId=CommonUtil.getLogUser().getId();
         List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
         if (CollectionUtils.isEmpty(recycleNotes)){
             throw new ResourceNotFoundException("recycle bin is empty");
@@ -226,7 +227,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public List<FavNoteDto> getFavNotes() throws Exception {
-        Integer userId=1;
+        Integer userId= CommonUtil.getLogUser().getId();
         List<FavNote> allFavNoteByUserId = favNoteRepository.findAllFavNoteByUserId(userId);
         if(CollectionUtils.isEmpty(allFavNoteByUserId)){
             throw new ResourceNotFoundException("favourite notes are empty");
