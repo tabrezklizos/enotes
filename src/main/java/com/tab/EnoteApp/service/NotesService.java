@@ -20,6 +20,8 @@ public interface NotesService {
 
     NotesResponse findAllNotesByUserId(Integer pageNo,Integer pageSize);
 
+    NotesResponse searchNotesByUser(String keyword,Integer pageNo,Integer pageSize);
+
     Boolean softDeleteNote(Integer id) throws Exception;
 
     Boolean restoreNote(Integer id) throws Exception;

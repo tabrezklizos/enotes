@@ -65,6 +65,22 @@ public class NotesController {
         return CommonUtil.createResponse(allNotes,HttpStatus.OK);
     }
 
+    @GetMapping("/search-notes")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> getSearchNotesByUser(
+            @RequestParam(name="keyword",defaultValue ="") String keyword,
+            @RequestParam(name="pageNo",defaultValue ="0") Integer pageNo,
+            @RequestParam(name="pageSize",defaultValue = "10") Integer pageSize
+    ){
+
+        NotesResponse allNotes = notesService.searchNotesByUser(keyword,pageNo,pageSize);
+        if(ObjectUtils.isEmpty(allNotes)){
+            return ResponseEntity.noContent().build();
+        }
+        return CommonUtil.createResponse(allNotes,HttpStatus.OK);
+    }
+
+
 
     @GetMapping("/downloadFile/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")

@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
     private void verifyPswdResetToken(String existingToken, String token) {
         if(StringUtils.hasText(token)){
 
@@ -111,8 +112,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("invalid token");
         }
     }
+    @Override
+    public void resetPassword(Integer uid, String newPassword) throws Exception {
 
+        User user = userRepository.findById(uid).orElseThrow(() -> new ResourceNotFoundException("invalid user"));
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    user.getStatus().setPswdVerificationToken(null);
+                    userRepository.save(user);
 
+    }
 }
 
 

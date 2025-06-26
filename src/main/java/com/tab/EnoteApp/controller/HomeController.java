@@ -1,5 +1,6 @@
 package com.tab.EnoteApp.controller;
 
+import com.tab.EnoteApp.dto.PswdResetRequest;
 import com.tab.EnoteApp.service.HomeService;
 import com.tab.EnoteApp.service.UserService;
 import com.tab.EnoteApp.util.CommonUtil;
@@ -31,10 +32,15 @@ public class HomeController {
             userService.sendEmailForPasswordReset(email,request);
         return CommonUtil.createResponseMessage("Email send success !! Check Email Reset Password",HttpStatus.OK);
     }
-    @PostMapping("/verify-pswd-link")
+    @GetMapping("/verify-pswd-link")
     public ResponseEntity<?> verifyPwsdLink(@RequestParam Integer uid, @RequestParam String code) throws Exception {
         userService.verifyPswdResetLink(uid,code);
         return CommonUtil.createResponseMessage("verification success",HttpStatus.OK);
+    }
+    @PostMapping("/reset-pswd")
+    public ResponseEntity<?> resetPswd(@RequestBody PswdResetRequest pswdResetRequest) throws Exception {
+        userService.resetPassword(pswdResetRequest.getUid(), pswdResetRequest.getNewPassword());
+        return CommonUtil.createResponseMessage("password reset success",HttpStatus.OK);
     }
 
 }
