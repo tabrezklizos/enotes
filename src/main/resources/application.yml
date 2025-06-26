@@ -1,0 +1,149 @@
+spring:
+  application:
+    name: EnoteApp
+  profiles:
+    active: dev
+---
+# dev config
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/enotes_dev
+    username: root
+    password: tabrez123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tabrez@klizos.com
+    password: jqjz remk gahn aftl
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+file:
+  upload:
+    path: notes/
+
+---
+# test config
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:mysql://localhost:3306/enotes_test
+    username: root
+    password: tabrez123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tabrez@klizos.com
+    password: jqjz remk gahn aftl
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+file:
+  upload:
+    path: notes/
+
+---
+# uat config
+spring:
+  config:
+    activate:
+      on-profile: uat
+  datasource:
+    url: jdbc:mysql://localhost:3306/enotes_uat
+    username: root
+    password: tabrez123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tabrez@klizos.com
+    password: jqjz remk gahn aftl
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+file:
+  upload:
+    path: notes/
+
+---
+# prod config
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://localhost:3306/enotes_prod
+    username: root
+    password: tabrez123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tabrez@klizos.com
+    password: jqjz remk gahn aftl
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+file:
+  upload:
+    path: notes/
+
