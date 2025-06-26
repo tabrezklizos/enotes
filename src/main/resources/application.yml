@@ -2,13 +2,13 @@ spring:
   application:
     name: EnoteApp
   profiles:
-    active: test
+    active: uat
 ---
 # dev config
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: uat
   datasource:
     url: jdbc:mysql://localhost:3306/enotes_dev
     username: root
