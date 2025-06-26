@@ -14,8 +14,8 @@ public class CommonUtil {
     public static ResponseEntity<?> createResponse(Object data, HttpStatus responseStatus){
 
         GenericResponse response = GenericResponse.builder()
-                .status("succes")
-                .message("succes")
+                .status("success")
+                .message("success")
                 .responseStatus(responseStatus)
                 .data(data)
                 .build();
@@ -27,7 +27,7 @@ public class CommonUtil {
     public static ResponseEntity<?> createResponseMessage(String message, HttpStatus responseStatus){
 
         GenericResponse response = GenericResponse.builder()
-                .status("succes")
+                .status("success")
                 .message(message)
                 .responseStatus(responseStatus)
                 .build();
