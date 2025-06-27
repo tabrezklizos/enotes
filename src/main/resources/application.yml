@@ -29,12 +29,20 @@ spring:
     port: 587
     username: tabrez@klizos.com
     password: jqjz remk gahn aftl
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+    tags-sorter: alpha
+    path: /enotes-doc
+  api-docs:
+    path: /enotes-api-doc
+
 file:
   upload:
     path: notes/

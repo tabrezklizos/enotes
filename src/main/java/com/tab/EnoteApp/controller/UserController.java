@@ -1,35 +1,23 @@
 package com.tab.EnoteApp.controller;
 
 import com.tab.EnoteApp.dto.PasswordChange;
-import com.tab.EnoteApp.dto.UserResponse;
-import com.tab.EnoteApp.entity.User;
-import com.tab.EnoteApp.service.UserService;
-import com.tab.EnoteApp.util.CommonUtil;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
+@Tag(name="user")
 @RequestMapping("api/v1/user")
-public class UserController {
+public interface UserController {
 
-    @Autowired
-    private ModelMapper mapper;
-    @Autowired
-    private UserService userService;
-
+    @Operation(summary = "get user profile",tags = {"user", "notes"},description = "get user profile")
     @GetMapping("/profile")
-    public ResponseEntity<?> profile(){
-        User logUser = CommonUtil.getLogUser();
-        UserResponse userResponse = mapper.map(logUser, UserResponse.class);
-       return CommonUtil.createResponse(userResponse, HttpStatus.FOUND);
-    }
-    @PostMapping("/chng-pswd")
-    public ResponseEntity<?> changePassword(@RequestBody PasswordChange passwordChange){
-        userService.changePassword(passwordChange);
-        return CommonUtil.createResponse("Password changed", HttpStatus.OK);
-    }
+    public ResponseEntity<?> profile();
 
+    @Operation(summary = "change password",tags = {"user", "notes"},description = "user can change password")
+    @PostMapping("/chng-pswd")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChange passwordChange);
 }

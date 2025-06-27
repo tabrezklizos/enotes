@@ -11,6 +11,7 @@ import com.tab.EnoteApp.service.JwtService;
 import com.tab.EnoteApp.service.AuthService;
 import com.tab.EnoteApp.util.EmailService;
 import com.tab.EnoteApp.util.Validation;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -46,6 +48,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Boolean register(UserRequest userRequest, String url) throws Exception {
         validation.userValidation(userRequest);
+
+        log.info("out of the validation ");
+
         User user = mapper.map(userRequest, User.class);
 
         setRole(userRequest,user);
