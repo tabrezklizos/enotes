@@ -42,13 +42,21 @@ springdoc:
     path: /enotes-doc
   api-docs:
     path: /enotes-api-doc
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
 
 server:
   port:  8080
 
+
 file:
   upload:
     path: notes/
+
 
 ---
 # test config
