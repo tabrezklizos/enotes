@@ -43,6 +43,9 @@ springdoc:
   api-docs:
     path: /enotes-api-doc
 
+server:
+  port:  8080
+
 file:
   upload:
     path: notes/
@@ -79,6 +82,18 @@ spring:
         auth: true
         starttls:
           enable: true
+
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+    tags-sorter: alpha
+    path: /enotes-doc
+  api-docs:
+    path: /enotes-api-doc
+
+server:
+  port:  8081
+
 file:
   upload:
     path: notes/
@@ -115,6 +130,18 @@ spring:
         auth: true
         starttls:
           enable: true
+
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+    tags-sorter: alpha
+    path: /enotes-doc
+  api-docs:
+    path: /enotes-api-doc
+
+server:
+  port:  8082
+
 file:
   upload:
     path: notes/
@@ -151,6 +178,18 @@ spring:
         auth: true
         starttls:
           enable: true
+
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+    tags-sorter: alpha
+    path: /enotes-doc
+  api-docs:
+    path: /enotes-api-doc
+
+server:
+  port:  8083
+
 file:
   upload:
     path: notes/

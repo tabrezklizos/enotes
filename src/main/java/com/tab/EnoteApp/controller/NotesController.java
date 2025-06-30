@@ -1,6 +1,10 @@
 package com.tab.EnoteApp.controller;
 
+import com.tab.EnoteApp.dto.NotesRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +18,12 @@ import static com.tab.EnoteApp.util.Constants.*;
 public interface NotesController {
 
     @Operation(summary = "save notes",tags={"notes", "user"},description = "User can save notes")
-    @PostMapping("/save")
+    @PostMapping(value="/save",consumes = "multipart/form-data")
     @PreAuthorize( ROLE_USER)
-    public ResponseEntity<?> saveNotes(@RequestParam String notes,
-                                       @RequestParam(required = false) MultipartFile file) throws Exception;
+    public ResponseEntity<?> saveNotes(@RequestParam
+                                       @Parameter(description = "Json String Notes",required=true,
+                                       content = @Content(schema = @Schema(implementation = NotesRequest.class)))
+                                       String notes,@RequestParam(required = false) MultipartFile file) throws Exception;
 
     @Operation(summary = "get all notes",tags={"notes"},description = "Admin can get all notes")
     @GetMapping("/")

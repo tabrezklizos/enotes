@@ -3,6 +3,8 @@ package com.tab.EnoteApp.controller;
 import com.tab.EnoteApp.dto.LoginRequest;
 import com.tab.EnoteApp.dto.UserRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/auth")
 public interface AuthController {
 
+    @ApiResponses(value = {@ApiResponse(responseCode = "201",description = "Register Success"),
+                            @ApiResponse(responseCode = "500",description = "Internal Server Error"),
+                              @ApiResponse(responseCode = "400",description = "Bad Request")})
     @Operation(summary = "User Register Endpoints",tags = {"Authentication", "home"})
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception;

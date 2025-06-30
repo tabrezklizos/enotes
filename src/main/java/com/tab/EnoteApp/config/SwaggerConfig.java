@@ -32,7 +32,8 @@ public class SwaggerConfig {
         List<Server> serverList = List.of
                 (new Server().description("dev").url("http://localhost:8080"),
                 new Server().description("test").url("http://localhost:8081"),
-                new Server().description("prod").url("http://localhost:8082"));
+                new Server().description("uat").url("http://localhost:8082"),
+                new Server().description("prod").url("http://localhost:8083"));
 
         SecurityScheme securityScheme = new SecurityScheme().name("Authorization")
                  .scheme("bearer").type(SecurityScheme.Type.HTTP)
