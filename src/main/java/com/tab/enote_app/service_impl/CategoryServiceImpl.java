@@ -6,13 +6,17 @@ import com.tab.enote_app.entity.Category;
 import com.tab.enote_app.exception.ResourceExistsException;
 import com.tab.enote_app.exception.ResourceNotFoundException;
 import com.tab.enote_app.repository.CategoryRepository;
+import com.tab.enote_app.service.CacheManagerService;
 import com.tab.enote_app.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final  CategoryRepository categoryRepository;
     private final  ModelMapper mapper;
+    private final CacheManagerService cacheManagerService;
 
     @Override
     public Boolean saveCategory(CategoryDto categoryDto) throws Exception {
@@ -78,6 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("allActiveCategory")
     public List<CategoryResponse> getActiveCategoryAndIsDeletedFalse() {
 
         List<Category> categoryList = categoryRepository.findByIsActiveTrueAndIsDeletedFalse();
@@ -89,8 +95,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("allCategory")
     public List<CategoryResponse> getAllCategory() {
-
+        log.info(">>> Cache MISS: fetching from DB");
         List<Category> categoryList = categoryRepository.findByIsDeletedFalse();
         List<CategoryResponse> categoryResponselist
                 = categoryList.stream()
@@ -101,6 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
+    @Cacheable(value="getCategoryById", key="#id")
     public CategoryDto getCategoryByIdAndIsDeletedFalse(Integer id) throws Exception {
         Category category= categoryRepository
                                     .findByIdAndIsDeletedFalse(id)
@@ -118,6 +126,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value="getCategoryById", key="#id")
     public Boolean deleteCategoryById(Integer id) {
 
         Optional<Category> optionalCategory= categoryRepository.findById(id);
@@ -127,6 +136,10 @@ public class CategoryServiceImpl implements CategoryService {
             Category category = optionalCategory.get();
                      category.setIsDeleted(true);
                      categoryRepository.save(category);
+
+            //remove from cache
+            cacheManagerService.removeCacheByName(Arrays.asList("allCategory","allActiveCategory"));
+
             return true;
         }
         return false;
