@@ -8,6 +8,7 @@ import com.tab.enote_app.exception.ResourceNotFoundException;
 import com.tab.enote_app.repository.CategoryRepository;
 import com.tab.enote_app.service.CacheManagerService;
 import com.tab.enote_app.service.CategoryService;
+import com.tab.enote_app.util.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,21 +29,18 @@ public class CategoryServiceImpl implements CategoryService {
     private final  CategoryRepository categoryRepository;
     private final  ModelMapper mapper;
     private final CacheManagerService cacheManagerService;
+    private final Validation validation;
 
     @Override
     public Boolean saveCategory(CategoryDto categoryDto) throws Exception {
 
-        Optional <Category> categoryExisted= categoryRepository
-                .findByNameAndIsDeletedFalse(categoryDto.getName());
+        validation.categoryValidation(categoryDto);
 
-
-        if(categoryExisted.isPresent()){
-
-            log.info(" existedCaregory: {}",categoryExisted.get());
-
-            throw new ResourceExistsException("resource exist exception");
+        Boolean exist = categoryRepository.existsByName(categoryDto.getName().trim());
+        if (exist) {
+            // throw error
+            throw new ResourceExistsException("Category already exist");
         }
-
 
         Category category = mapper.map(categoryDto, Category.class);
 
@@ -63,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
         return true;
     }
 
-    private void updateCategory(Category category) {
+    void updateCategory(Category category) {
 
         Optional<Category> byId = categoryRepository.findById(category.getId());
 

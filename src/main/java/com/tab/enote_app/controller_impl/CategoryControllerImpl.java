@@ -5,7 +5,6 @@ import com.tab.enote_app.dto.CategoryDto;
 import com.tab.enote_app.dto.CategoryResponse;
 import com.tab.enote_app.service.CategoryService;
 import com.tab.enote_app.util.CommonUtil;
-import com.tab.enote_app.util.Validation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +20,14 @@ import java.util.List;
 public class CategoryControllerImpl implements CategoryController {
 
     private final CategoryService categoryService;
-    private final Validation validation;
 
     @Override
     public ResponseEntity<?> saveCategory(CategoryDto categoryDto) throws Exception {
 
-        validation.categoryValidation(categoryDto);
-
         Boolean saveCategory = categoryService.saveCategory(categoryDto);
         if(saveCategory){
 
-            return CommonUtil.createResponseMessage("saved succes",HttpStatus.CREATED);
+            return CommonUtil.createResponseMessage("saved success",HttpStatus.CREATED);
             //return new ResponseEntity<>("saved success", HttpStatus.CREATED );
         }
         return CommonUtil.errorResponse(saveCategory,HttpStatus.INTERNAL_SERVER_ERROR);

@@ -12,4 +12,7 @@ public interface CategoryRepository extends JpaRepository<Category,Integer> {
     Optional<Category> findByIdAndIsDeletedFalse(Integer id);
     List<Category> findByIsDeletedFalse();
     Optional<Category> findByNameAndIsDeletedFalse(String name);
+
+    Boolean existsByName(String name);
+
 }
