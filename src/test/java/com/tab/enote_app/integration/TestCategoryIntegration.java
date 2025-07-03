@@ -44,16 +44,15 @@ public class TestCategoryIntegration {
 
         categoryDto  = CategoryDto.builder()
                 .id(null)
-                .name("Java Notes")
-                .description("It is an Effective Java, written By Blouch")
+                .name("Think Java")
+                    .description("It is written By Eckel")
                 .isActive(true)
                 .build();
 
-
         category=Category.builder()
                 .id(null)
-                .name("Java Notes")
-                .description("It is an Effective Java, written By Blouch")
+                .name("Think Java")
+                .description("It is written By Eckel")
                 .isActive(true)
                 .isDeleted(false)
                 .build();
