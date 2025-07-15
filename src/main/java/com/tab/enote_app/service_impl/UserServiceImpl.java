@@ -3,6 +3,7 @@ package com.tab.enote_app.service_impl;
 import com.tab.enote_app.dto.EmailRequest;
 import com.tab.enote_app.dto.PasswordChange;
 import com.tab.enote_app.entity.User;
+import com.tab.enote_app.event.UserResetPassword;
 import com.tab.enote_app.exception.ResourceNotFoundException;
 import com.tab.enote_app.repository.UserRepository;
 import com.tab.enote_app.service.UserService;
@@ -11,6 +12,9 @@ import com.tab.enote_app.util.Constants;
 import com.tab.enote_app.util.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -25,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final  PasswordEncoder passwordEncoder;
     private final  UserRepository userRepository;
     private final  EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void changePassword(PasswordChange passwordChange) {
@@ -57,15 +62,23 @@ public class UserServiceImpl implements UserService {
         //Generate pswdtoken
         String pswdResetToken = UUID.randomUUID().toString();
         user.getStatus().setPswdVerificationToken(pswdResetToken);
-        User UpdatedUser = userRepository.save(user);
+        User updatedUser = userRepository.save(user);
 
         String url = CommonUtil.getUrl(request);
-        sendEmailRequest(UpdatedUser,url);
+
+        //send Email by event
+        eventPublisher.publishEvent(new UserResetPassword(this,updatedUser,url));
+       // sendEmailRequest(updatedUser,url);
 
     }
+    
+    @Async
+    @EventListener
+    public void sendEmailRequest(UserResetPassword event) throws Exception {
 
+        User user = event.getUser();
+        String url =event.getUrl();
 
-    private void sendEmailRequest(User user, String url) throws Exception {
         String message ="Hi,<b>[[username]]</b> "
                 +"<br><p>you have requested to reset your password</p>"
                 +"<p> Click below link to change your password</p>"

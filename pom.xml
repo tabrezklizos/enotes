@@ -8,7 +8,7 @@
 	<groupId>com.tab</groupId>
 	<artifactId>EnoteApp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>EnoteApp</name>
 	<description>Spring Boot EnoteApp Project</description>
@@ -145,6 +145,13 @@
 			<version>3.4.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -164,6 +171,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.4.0</version>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

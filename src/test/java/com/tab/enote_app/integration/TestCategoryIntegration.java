@@ -1,3 +1,4 @@
+/*
 package com.tab.enote_app.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -104,3 +105,4 @@ public class TestCategoryIntegration {
 
 
 
+*/

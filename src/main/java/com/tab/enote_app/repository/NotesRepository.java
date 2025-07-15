@@ -23,7 +23,7 @@ public interface NotesRepository extends JpaRepository<Notes,Integer> {
                                  + "or lower(n.category.name) like lower(concat('%',:keyword,'%'))) "
                                  + "and n.isDeleted=false "
                                  + "and n.createdBy=:userId ")
-    Page <Notes> userSearchNotes(@Param("keyword") String keyword,@Param("userId") Integer userId, Pageable pageable);
+    Page <Notes>  userSearchNotes(@Param("keyword") String keyword,@Param("userId") Integer userId, Pageable pageable);
 
     @Query(" select n from Notes  as n where n.id=?1 and n.createdBy=?2  ")
     Notes findByIdAndCreatedBy(Integer id, Integer createdBy);

@@ -5,6 +5,7 @@ import com.tab.enote_app.dto.*;
 import com.tab.enote_app.entity.AccountStatus;
 import com.tab.enote_app.entity.Role;
 import com.tab.enote_app.entity.User;
+import com.tab.enote_app.event.UserRegisteredEvent;
 import com.tab.enote_app.repository.RoleRepository;
 import com.tab.enote_app.repository.UserRepository;
 import com.tab.enote_app.service.AuthService;
@@ -14,12 +15,14 @@ import com.tab.enote_app.util.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final  AuthenticationManager authenticationManager;
     private final  JwtService jwtService;
     private final  BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Boolean register(UserRequest userRequest, String url) throws Exception {
@@ -58,17 +62,21 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepository.save(user);
 
-        if(!ObjectUtils.isEmpty(savedUser)){
-            //send Email
-            sendEmailForRegister(savedUser,url);
-            return true;
-        }
-        return false;
+        if (savedUser.getId() == null) return false;
+
+        //send Email
+          eventPublisher.publishEvent(new UserRegisteredEvent(this, savedUser, url));
+        //sendEmailForRegister(savedUser,url);
+        return true;
     }
 
 
+    @Async
+    @EventListener
+    public void sendEmailForRegister(UserRegisteredEvent event) throws Exception {
 
-    private void sendEmailForRegister(User savedUser, String url) throws Exception {
+        User savedUser = event.getUser();
+        String url = event.getUrl();
 
         String message ="Hi,<b>[[username]]</b> " +
                 "<br> your account register succesfully <br>" +

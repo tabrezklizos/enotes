@@ -72,7 +72,9 @@ public class NotesServiceImpl implements NotesService {
         if(NotesExist.isPresent()){
             throw new ResourceExistsException("Notes exist with title "+notesDto.getTitle());
         }
+
         checkCategoryExist(notesDto.getCategory());
+        
         Notes notesMap = mapper.map(notesDto, Notes.class);
         FileDetails fileDlts=saveFileDetails(file);
 
@@ -163,7 +165,7 @@ public class NotesServiceImpl implements NotesService {
         Integer userId=CommonUtil.getLogUser().getId();
        Notes existNote = notesRepository.findByIdAndCreatedBy(id,userId);
                if(ObjectUtils.isEmpty(existNote)){
-                   throw new ResourceNotFoundException("Notes not found");
+                   throw new ResourceNotFoundException("Notes are not found");
                }
 
                existNote.setIsDeleted(true);
@@ -179,7 +181,7 @@ public class NotesServiceImpl implements NotesService {
         Integer userId=CommonUtil.getLogUser().getId();
         Notes existNote = notesRepository.findByIdAndCreatedBy(id,userId);
         if(ObjectUtils.isEmpty(existNote)){
-            throw new ResourceNotFoundException("Notes not found");
+            throw new ResourceNotFoundException("Notes are not found");
         }
 
         existNote.setIsDeleted(false);
@@ -260,13 +262,13 @@ public class NotesServiceImpl implements NotesService {
     public Boolean copyNote(Integer noteId) throws Exception {
         Notes note = notesRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("note does not exist"));
 
-         Notes copyNote = Notes.builder()
+           Notes copyNote = Notes.builder()
                                  .title(note.getTitle())
                                  .isDeleted(false)
                                  .category(note.getCategory())
                                  .description(note.getDescription())
                                  .fileDetails(null)
-                                .build();
+                                 .build();
 
          notesRepository.save(copyNote);
 
