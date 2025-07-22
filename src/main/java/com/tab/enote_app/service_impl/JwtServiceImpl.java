@@ -106,7 +106,7 @@ public class JwtServiceImpl implements JwtService {
         }
         return false;
     }
-    private Boolean isTokenExpire(String token) {
+        private Boolean isTokenExpire(String token) {
         Date isExpire = extractAllClaims(token).getExpiration();
         return isExpire.before(new Date());
     }

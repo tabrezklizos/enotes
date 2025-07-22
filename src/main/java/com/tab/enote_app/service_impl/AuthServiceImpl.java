@@ -5,7 +5,7 @@ import com.tab.enote_app.dto.*;
 import com.tab.enote_app.entity.AccountStatus;
 import com.tab.enote_app.entity.Role;
 import com.tab.enote_app.entity.User;
-import com.tab.enote_app.event.UserRegisteredEvent;
+import com.tab.enote_app.event.EmailEvent;
 import com.tab.enote_app.repository.RoleRepository;
 import com.tab.enote_app.repository.UserRepository;
 import com.tab.enote_app.service.AuthService;
@@ -15,9 +15,9 @@ import com.tab.enote_app.util.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final  BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Override
+/*    @Override
     public Boolean register(UserRequest userRequest, String url) throws Exception {
         validation.userValidation(userRequest);
 
@@ -68,10 +68,49 @@ public class AuthServiceImpl implements AuthService {
           eventPublisher.publishEvent(new UserRegisteredEvent(this, savedUser, url));
         //sendEmailForRegister(savedUser,url);
         return true;
+    }*/
+
+    private final AmqpTemplate amqpTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
+
+    @Override
+    public Boolean register(UserRequest userRequest, String url) throws Exception {
+        validation.userValidation(userRequest);
+
+        User user = mapper.map(userRequest, User.class);
+        setRole(userRequest, user);
+
+        AccountStatus status = AccountStatus.builder()
+                .isActive(false)
+                .verificationCode(UUID.randomUUID().toString())
+                .build();
+
+        user.setStatus(status);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() == null) return false;
+
+        // Publish EmailEvent to RabbitMQ
+        EmailEvent emailEvent = EmailEvent.builder()
+                    .email(savedUser.getEmail())
+                    .firstName(savedUser.getFirstName())
+                    .userId(savedUser.getId())
+                    .verificationCode(savedUser.getStatus().getVerificationCode())
+                    .baseUrl(url)
+                    .build();
+
+        amqpTemplate.convertAndSend(exchange, routingKey, emailEvent);
+
+        return true;
     }
 
-
-    @Async
+  /*  @Async
     @EventListener
     public void sendEmailForRegister(UserRegisteredEvent event) throws Exception {
 
@@ -98,7 +137,7 @@ public class AuthServiceImpl implements AuthService {
         emailService.sendEmail(emailRequest);
 
 
-    }
+    }*/
 
     private void setRole(UserRequest userRequest, User user) {
         List<Integer> roleIds = userRequest.getRoles().stream().map(r -> r.getId()).toList();
@@ -109,7 +148,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+         Authentication authenticate = authenticationManager
+        .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
             if(authenticate.isAuthenticated()){
                 CustomUserDetails customUserDetails = (CustomUserDetails)authenticate.getPrincipal();

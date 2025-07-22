@@ -62,6 +62,14 @@ file:
   upload:
     path: notes/
 
+rabbitmq:
+  queue:
+    name: emailQueue
+  exchange:
+    name: emailExchange
+  routing:
+    key: email.routing.key
+
 
 ---
 # test config
