@@ -92,11 +92,11 @@ public class UserServiceImpl implements UserService {
                  +user.getId()+"&&code="+user.getStatus().getPswdVerificationToken());
 
         EmailRequest emailRequest = EmailRequest.builder()
-                .to(user.getEmail())
-                .title("password reset")
-                .subject("password reset link")
-                .message(message)
-                .build();
+                    .to(user.getEmail())
+                    .title("password reset")
+                    .subject("password reset link")
+                    .message(message)
+                    .build();
 
         emailService.sendEmail(emailRequest);
     }
