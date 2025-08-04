@@ -1,12 +1,17 @@
 package com.tab.enote_app.service_impl;
 
 import com.tab.enote_app.config.security.CustomUserDetails;
-import com.tab.enote_app.dto.*;
+import com.tab.enote_app.dto.LoginRequest;
+import com.tab.enote_app.dto.LoginResponse;
+import com.tab.enote_app.dto.UserRequest;
+import com.tab.enote_app.dto.UserResponse;
 import com.tab.enote_app.entity.AccountStatus;
 import com.tab.enote_app.entity.Role;
+import com.tab.enote_app.entity.Token;
 import com.tab.enote_app.entity.User;
 import com.tab.enote_app.event.EmailEvent;
 import com.tab.enote_app.repository.RoleRepository;
+import com.tab.enote_app.repository.TokenRepository;
 import com.tab.enote_app.repository.UserRepository;
 import com.tab.enote_app.service.AuthService;
 import com.tab.enote_app.service.JwtService;
@@ -71,6 +76,7 @@ public class AuthServiceImpl implements AuthService {
     }*/
 
     private final AmqpTemplate amqpTemplate;
+    private final TokenRepository tokenRepository;
 
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
@@ -154,18 +160,40 @@ public class AuthServiceImpl implements AuthService {
 
             if(authenticate.isAuthenticated()){
                 CustomUserDetails customUserDetails = (CustomUserDetails)authenticate.getPrincipal();
-                String token = jwtService.generateToken(customUserDetails.getUser());
+                User user=customUserDetails.getUser();
+                String jwt = jwtService.generateToken(user);
+
+                //set logout true from old token
+                revokeAllTokenByUser(user);
+
+                // save new token
+                saveUserToken(jwt, user);
 
                 LoginResponse response = LoginResponse.builder()
-                        .user(mapper.map(customUserDetails.getUser(), UserResponse.class))
-                        .token(token)
+                        .user(mapper.map(user, UserResponse.class))
+                        .token(jwt)
                         .build();
                 return response;
             }
-
         return null;
     }
 
+    private void revokeAllTokenByUser(User user) {
+        List<Token> allValidTokenByUser = tokenRepository.findAllTokenByUser(user.getId());
 
+        if(!allValidTokenByUser.isEmpty()){
+            allValidTokenByUser.forEach(t -> {
+                t.setLoggedOut(true);
+            });
+        }
+        tokenRepository.saveAll(allValidTokenByUser);
+    }
 
+    private void saveUserToken(String jwt, User user) {
+        Token token = new Token();
+        token.setToken(jwt);
+        token.setUser(user);
+        token.setLoggedOut(false);
+        tokenRepository.save(token);
+    }
 }

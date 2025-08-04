@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,6 +26,7 @@ public class    SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
+    private final CustomLogoutHandler logoutHandler;
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -57,7 +59,15 @@ public class    SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(l->l.logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler(
+                        (request,
+                         response,
+                         authentication)-> SecurityContextHolder.clearContext()
+                ))
+        ;
 
 
         return http.build();

@@ -30,4 +30,7 @@ public class User implements Serializable {
     @JoinColumn(name="status_id")
     private AccountStatus status;
 
+    @OneToMany(mappedBy = "user")
+    private List<Token>tokens;
+
 }

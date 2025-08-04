@@ -3,6 +3,7 @@ package com.tab.enote_app.service_impl;
 import com.tab.enote_app.entity.User;
 import com.tab.enote_app.exception.JwtAuthException;
 import com.tab.enote_app.exception.JwtExpireException;
+import com.tab.enote_app.repository.TokenRepository;
 import com.tab.enote_app.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -23,9 +24,10 @@ import java.util.HashMap;
 @Service
 public class JwtServiceImpl implements JwtService {
 
+    private final TokenRepository tokenRepository;
     private String secretKey="";
 
-    public JwtServiceImpl() {
+    public JwtServiceImpl(TokenRepository tokenRepository) {
 
         try {
 
@@ -37,8 +39,7 @@ public class JwtServiceImpl implements JwtService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
+        this.tokenRepository = tokenRepository;
     }
 
     public String generateToken(User user){
@@ -100,8 +101,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
+
+        boolean isValidToken = tokenRepository.findByToken(token).map(t-> t.isLoggedOut()).orElse(false);
+
         Boolean isExpire =  isTokenExpire(token);
-        if(username.equals(userDetails.getUsername()) && !isExpire){
+        if(username.equals(userDetails.getUsername()) && !isExpire && isValidToken){
             return true;
         }
         return false;
